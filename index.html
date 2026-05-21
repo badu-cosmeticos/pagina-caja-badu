@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badu Cosméticos - Gestión</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- SECTION 1: DASHBOARD -->
+    <section id="sec-dashboard" class="app-section active">
+        <header>
+            <h1>Badu Cosméticos</h1>
+            <p>Panel de Control</p>
+        </header>
+        
+        <div class="metrics-grid">
+            <div class="card card-normal">
+                <h3>Caja Actual</h3>
+                <p id="dash-caja">$0.00</p>
+            </div>
+            <div class="card card-loss">
+                <h3>Por Cobrar (Clientes)</h3>
+                <p id="dash-por-cobrar">$0.00</p>
+            </div>
+            <div class="card card-normal">
+    <h3>Inversión Bárbara</h3> <p id="dash-inv-a">$0.00</p>
+    </div>
+    <div class="card card-normal">
+    <h3>Inversión Angie</h3> <p id="dash-inv-b">$0.00</p>
+    </div>
+        </div>
+
+        <div class="card card-extra" style="margin-top: 15px;">
+            <h3>Cuentas entre Socias</h3>
+            <p id="dash-liquidacion" style="font-size: 1.1rem; font-weight: bold; margin-top: 5px;">Cargando cuentas...</p>
+        </div>
+    </section>
+
+    <!-- SECTION 2: VENTAS -->
+    <section id="sec-ventas" class="app-section">
+        <h2>Registrar Venta</h2>
+        <form id="form-venta" class="card">
+            <div class="form-group">
+                <label>Producto / Artículo</label>
+                <input type="text" id="v-producto" required placeholder="Ej. Cartera Cuero">
+            </div>
+            <div class="form-group">
+                <label>Categoría</label>
+                <select id="v-categoria">
+                    <option value="Cosméticos">Cosméticos</option>
+                    <option value="Carteras">Carteras</option>
+                    <option value="Otros">Otros</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Cliente</label>
+                <input type="text" id="v-cliente" required placeholder="Nombre del cliente">
+            </div>
+            <div class="form-group">
+                <label>Precio de Venta</label>
+                <input type="number" id="v-precio" step="0.01" required placeholder="0.00">
+            </div>
+            <div class="form-group row">
+                <label><input type="checkbox" id="v-pagado" checked> ¿Ya está pagado?</label>
+            </div>
+            <div class="form-group">
+        <label>¿Quién lo vendió?</label>
+        <select id="v-socia">
+        <option value="Socia A">Bárbara</option> <option value="Socia B">Angie</option>
+        </select>
+    </div>
+            <button type="submit" class="btn-main">Guardar Venta</button>
+        </form>
+    </section>
+
+    <!-- SECTION 3: GASTOS EXTRAS -->
+    <section id="sec-gastos" class="app-section">
+        <h2>Registrar Gasto Extra</h2>
+        <form id="form-gasto" class="card">
+            <div class="form-group">
+                <label>Concepto del Gasto</label>
+                <input type="text" id="g-concepto" required placeholder="Ej. Almuerzo, Transporte, Bolsa">
+            </div>
+            <div class="form-group">
+                <label>Monto ($)</label>
+                <input type="number" id="g-monto" step="0.01" required placeholder="0.00">
+            </div>
+            <div class="form-group">
+         <label>¿Quién lo pagó?</label>
+         <select id="g-pagador">
+         <option value="Socia A">Bárbara</option>
+         <option value="Socia B">Angie</option>
+         <option value="Caja">Dinero del Negocio (Caja)</option>
+         </select>
+    </div>
+            <button type="submit" class="btn-main btn-yellow">Guardar Gasto Extra</button>
+        </form>
+    </section>
+
+    <!-- SECTION 4: INVENTARIO -->
+    <section id="sec-inventario" class="app-section">
+        <h2>Nuevo Lote de Mercancía</h2>
+        <form id="form-inventario" class="card">
+            <div class="form-group">
+                <label>Nombre del Artículo</label>
+                <input type="text" id="i-nombre" required placeholder="Ej. Cartera Negra Guess">
+            </div>
+            <div class="form-group">
+                <label>Cantidad de Unidades</label>
+                <input type="number" id="i-cantidad" required placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>Costo Base Unitario ($)</label>
+                <input type="number" id="i-costo-base" step="0.01" required placeholder="Ej. 10">
+            </div>
+            <div class="form-group">
+                <label>Gasto de Envío Total ($)</label>
+                <input type="number" id="i-envio-total" step="0.01" value="0" placeholder="Ej. 5">
+            </div>
+            <div class="form-group">
+            <label>¿Quién financió esta compra?</label>
+            <select id="i-financiador">
+            <option value="Socia A">Bárbara</option>
+            <option value="Socia B">Angie</option>
+            <option value="Caja">Caja de la Tienda</option>
+        </select>
+    </div>
+            <button type="submit" class="btn-main">Registrar Lote</button>
+        </form>
+
+        <h3 style="margin-top: 20px;">Stock Disponible</h3>
+        <div id="lista-inventario">
+            <!-- Los artículos aparecerán aquí -->
+        </div>
+    </section>
+
+    <!-- STICKY BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" onclick="switchTab('sec-dashboard')">Panel</button>
+        <button class="nav-btn" onclick="switchTab('sec-ventas')">Ventas</button>
+        <button class="nav-btn" onclick="switchTab('sec-gastos')">Gastos</button>
+        <button class="nav-btn" onclick="switchTab('sec-inventario')">Inventario</button>
+    </nav>
+
+    <script src="app.js"></script>
+</body>
+</html>

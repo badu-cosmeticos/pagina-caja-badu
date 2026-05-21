@@ -1,0 +1,154 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #F8F9FA;
+    color: #212529;
+    padding: 15px 15px 90px 15px;
+}
+
+h1 { font-size: 1.6rem; color: #201E20; }
+h2 { font-size: 1.3rem; margin-bottom: 15px; color: #201E20; }
+header { margin-bottom: 20px; }
+header p { color: #6c757d; font-size: 0.9rem; }
+
+/* Contenedores de Secciones */
+.app-section {
+    display: none;
+}
+.app-section.active {
+    display: block;
+}
+
+/* Tarjetas Estilo Cards */
+.card {
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* Psicología de Colores Solicitada */
+.card-gain, .status-gain {
+    background-color: #D1E7DD !important;
+    color: #0F5132 !important;
+}
+.card-loss, .status-loss {
+    background-color: #F8D7DA !important;
+    color: #842029 !important;
+}
+.card-extra, .status-extra {
+    background-color: #FFF3CD !important;
+    color: #664D03 !important;
+}
+.card-normal {
+    background-color: #E2E3E5 !important;
+    color: #41464B !important;
+}
+
+/* Cuadrícula del Dashboard */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.metrics-grid .card p {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* Formularios Móviles Híper-Intuitivos */
+.form-group {
+    margin-bottom: 14px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+.form-group input, .form-group select {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+    padding: 0 12px;
+    font-size: 1rem;
+    background-color: #FFF;
+}
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: #E0A96D;
+}
+.form-group.row {
+    display: flex;
+    align-items: center;
+}
+.form-group.row input {
+    width: auto;
+    height: auto;
+    margin-right: 8px;
+}
+
+/* Botones Grandes Táctiles */
+.btn-main {
+    width: 100%;
+    height: 48px;
+    background-color: #212529;
+    color: #FFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+.btn-yellow {
+    background-color: #E0A96D;
+    color: #212529;
+}
+
+/* Listas tipo Tickets verticales (No Tablas) */
+.ticket-item {
+    background: #FFF;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+
+/* Menú Navegación Inferior Móvil */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background-color: #FFFFFF;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+}
+.nav-btn {
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 10px;
+    cursor: pointer;
+}
+.nav-btn.active {
+    color: #E0A96D;
+    font-weight: bold;
+}
