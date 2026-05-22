@@ -188,5 +188,41 @@ async function cargarDatosDesdeGoogle() {
 // Cambiar la ejecución inicial por la nueva función completa
 window.onload = cargarDatosDesdeGoogle;
 
-// Ejecutar la carga automática cuando la página se termine de abrir
-window.onload = cargarInventarioDesdeGoogle;
+// Función mejorada y blindada para cargar datos sin bloquearse
+async function cargarDatosDesdeGoogle() {
+    // 1. Intentar cargar el Inventario por separado
+    try {
+        const resInventario = await fetch(SCRIPT_URL + "?accion=obtenerInventario");
+        const datosInventario = await resInventario.json();
+        if (datosInventario && datosInventario.length > 0) {
+            estadoApp.inventario = datosInventario;
+            renderizarInventario();
+            console.log("Inventario cargado con éxito.");
+        }
+    } catch (error) {
+        console.error("Error al cargar Inventario:", error);
+    }
+
+    // 2. Intentar cargar las Finanzas por separado (si falla, no rompe el inventario)
+    try {
+        const resFinanzas = await fetch(SCRIPT_URL + "?accion=obtenerTotalesFinancieros");
+        const datosFinanzas = await resFinanzas.json();
+        if (datosFinanzas && !datosFinanzas.error) {
+            estadoApp.caja = datosFinanzas.caja;
+            estadoApp.inversionA = datosFinanzas.inversionA;
+            estadoApp.inversionB = datosFinanzas.inversionB;
+            estadoApp.porCobrar = datosFinanzas.porCobrar;
+            console.log("Finanzas cargadas con éxito.");
+        } else if (datosFinanzas.error) {
+            console.error("Error devuelto por Google:", datosFinanzas.error);
+        }
+    } catch (error) {
+        console.error("Error de conexión al cargar Finanzas:", error);
+    }
+
+    // 3. Pase lo que pase, refrescar los paneles con lo que tengamos
+    recalcularDashboard();
+}
+
+// Asegurar la ejecución al arrancar
+window.onload = cargarDatosDesdeGoogle;
