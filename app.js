@@ -156,37 +156,6 @@ async function enviarDatosAGoogle(pestana, datos) {
 
 // Inicializar vista
 recalcularDashboard();
-// Función para cargar absolutamente todo desde Google Sheets al abrir la app
-async function cargarDatosDesdeGoogle() {
-    try {
-        // 1. Traer y renderizar la lista visual de productos
-        const resInventario = await fetch(SCRIPT_URL + "?accion=obtenerInventario");
-        const datosInventario = await resInventario.json();
-        if (datosInventario && datosInventario.length > 0) {
-            estadoApp.inventario = datosInventario;
-            renderizarInventario();
-        }
-
-        // 2. Traer los totales de caja, cobros e inversiones reales de las chicas
-        const resFinanzas = await fetch(SCRIPT_URL + "?accion=obtenerTotalesFinancieros");
-        const datosFinanzas = await resFinanzas.json();
-        if (datosFinanzas && !datosFinanzas.error) {
-            estadoApp.caja = datosFinanzas.caja;
-            estadoApp.inversionA = datosFinanzas.inversionA;
-            estadoApp.inversionB = datosFinanzas.inversionB;
-            estadoApp.porCobrar = datosFinanzas.porCobrar;
-        }
-
-        // 3. Forzar a que las tarjetas de arriba se recalculen y se dibujen bien
-        recalcularDashboard();
-
-    } catch (error) {
-        console.error("Error al sincronizar datos iniciales con Google Sheets:", error);
-    }
-}
-
-// Cambiar la ejecución inicial por la nueva función completa
-window.onload = cargarDatosDesdeGoogle;
 
 // Función mejorada y blindada para cargar datos sin bloquearse
 async function cargarDatosDesdeGoogle() {
