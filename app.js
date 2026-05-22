@@ -63,6 +63,11 @@ document.getElementById('form-inventario').addEventListener('submit', function(e
     if (financiador === 'Socia A') estadoApp.inversionA += inversionTotalLote;
     if (financiador === 'Socia B') estadoApp.inversionB += inversionTotalLote;
     if (financiador === 'Caja') estadoApp.caja -= inversionTotalLote;
+    if (financiador === 'Mitad') {
+        const mitadGasto = inversionTotalLote / 2;
+        estadoApp.inversionA += mitadGasto;
+        estadoApp.inversionB += mitadGasto;
+    }
 
     // Añadir artículo al listado visual rápido
     estadoApp.inventario.push({ nombre, cantidad, costoRealUnitario });
@@ -121,6 +126,11 @@ document.getElementById('form-gasto').addEventListener('submit', function(e) {
     if (pagador === 'Socia A') estadoApp.inversionA += monto;
     if (pagador === 'Socia B') estadoApp.inversionB += monto;
     if (pagador === 'Caja') estadoApp.caja -= monto;
+    if (pagador === 'Mitad') {
+        const mitadGasto = monto / 2;
+        estadoApp.inversionA += mitadGasto;
+        estadoApp.inversionB += mitadGasto;
+    }
 
     recalcularDashboard();
     enviarDatosAGoogle("Gastos", { concepto, monto, pagador });
