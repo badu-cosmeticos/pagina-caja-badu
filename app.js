@@ -156,3 +156,22 @@ async function enviarDatosAGoogle(pestana, datos) {
 
 // Inicializar vista
 recalcularDashboard();
+// Función para cargar el inventario real desde Google Sheets al abrir la app
+async function cargarInventarioDesdeGoogle() {
+    try {
+        // Reemplaza SCRIPT_URL por la URL de tu Web App de Google Apps Script
+        const respuesta = await fetch(SCRIPT_URL + "?accion=obtenerInventario");
+        const datos = await respuesta.json();
+        
+        if (datos && datos.length > 0) {
+            estadoApp.inventario = datos;
+            renderizarInventario();
+            recalcularDashboard();
+        }
+    } catch (error) {
+        console.error("Error al cargar datos iniciales:", error);
+    }
+}
+
+// Ejecutar la carga automática cuando la página se termine de abrir
+window.onload = cargarInventarioDesdeGoogle;
