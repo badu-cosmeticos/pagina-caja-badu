@@ -156,22 +156,37 @@ async function enviarDatosAGoogle(pestana, datos) {
 
 // Inicializar vista
 recalcularDashboard();
-// Función para cargar el inventario real desde Google Sheets al abrir la app
-async function cargarInventarioDesdeGoogle() {
+// Función para cargar absolutamente todo desde Google Sheets al abrir la app
+async function cargarDatosDesdeGoogle() {
     try {
-        // Reemplaza SCRIPT_URL por la URL de tu Web App de Google Apps Script
-        const respuesta = await fetch(SCRIPT_URL + "?accion=obtenerInventario");
-        const datos = await respuesta.json();
-        
-        if (datos && datos.length > 0) {
-            estadoApp.inventario = datos;
+        // 1. Traer y renderizar la lista visual de productos
+        const resInventario = await fetch(SCRIPT_URL + "?accion=obtenerInventario");
+        const datosInventario = await resInventario.json();
+        if (datosInventario && datosInventario.length > 0) {
+            estadoApp.inventario = datosInventario;
             renderizarInventario();
-            recalcularDashboard();
         }
+
+        // 2. Traer los totales de caja, cobros e inversiones reales de las chicas
+        const resFinanzas = await fetch(SCRIPT_URL + "?accion=obtenerTotalesFinancieros");
+        const datosFinanzas = await resFinanzas.json();
+        if (datosFinanzas && !datosFinanzas.error) {
+            estadoApp.caja = datosFinanzas.caja;
+            estadoApp.inversionA = datosFinanzas.inversionA;
+            estadoApp.inversionB = datosFinanzas.inversionB;
+            estadoApp.porCobrar = datosFinanzas.porCobrar;
+        }
+
+        // 3. Forzar a que las tarjetas de arriba se recalculen y se dibujen bien
+        recalcularDashboard();
+
     } catch (error) {
-        console.error("Error al cargar datos iniciales:", error);
+        console.error("Error al sincronizar datos iniciales con Google Sheets:", error);
     }
 }
+
+// Cambiar la ejecución inicial por la nueva función completa
+window.onload = cargarDatosDesdeGoogle;
 
 // Ejecutar la carga automática cuando la página se termine de abrir
 window.onload = cargarInventarioDesdeGoogle;
