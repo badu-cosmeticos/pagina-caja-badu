@@ -139,23 +139,20 @@ document.getElementById('form-gasto').addEventListener('submit', function(e) {
     alert("¡Gasto extra registrado!");
 });
 
-// 6. FUNCIÓN DE ENVÍO DIRECTO A GOOGLE SHEETS VIA FETCH API
 async function enviarDatosAGoogle(pestana, datos) {
-    if(SCRIPT_URL === "TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI") return;
     try {
         await fetch(SCRIPT_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({ targetTab: pestana, ...datos })
         });
     } catch (error) {
         console.error("Error al sincronizar con Google Sheets:", error);
     }
 }
-
-// Inicializar vista
-recalcularDashboard();
 
 // Función mejorada y blindada para cargar datos sin bloquearse
 async function cargarDatosDesdeGoogle() {
@@ -165,14 +162,14 @@ async function cargarDatosDesdeGoogle() {
         const datosInventario = await resInventario.json();
         if (datosInventario && datosInventario.length > 0) {
             estadoApp.inventario = datosInventario;
-            renderizarInventario();
+            if (typeof renderizarInventario === "function") renderizarInventario();
             console.log("Inventario cargado con éxito.");
         }
     } catch (error) {
         console.error("Error al cargar Inventario:", error);
     }
 
-    // 2. Intentar cargar las Finanzas por separado (si falla, no rompe el inventario)
+    // 2. Intentar cargar las Finanzas y Ventas Pendientes por separado
     try {
         const resFinanzas = await fetch(SCRIPT_URL + "?accion=obtenerTotalesFinancieros");
         const datosFinanzas = await resFinanzas.json();
@@ -182,6 +179,11 @@ async function cargarDatosDesdeGoogle() {
             estadoApp.inversionB = datosFinanzas.inversionB;
             estadoApp.porCobrar = datosFinanzas.porCobrar;
             console.log("Finanzas cargadas con éxito.");
+
+            // Renderizar la lista de clientes que deben dinero si el HTML está listo
+            if (datosFinanzas.ventasPendientes) {
+                renderizarDeudores(datosFinanzas.ventasPendientes);
+            }
         } else if (datosFinanzas.error) {
             console.error("Error devuelto por Google:", datosFinanzas.error);
         }
@@ -190,8 +192,70 @@ async function cargarDatosDesdeGoogle() {
     }
 
     // 3. Pase lo que pase, refrescar los paneles con lo que tengamos
-    recalcularDashboard();
+    if (typeof recalcularDashboard === "function") recalcularDashboard();
 }
 
-// Asegurar la ejecución al arrancar
+// Función para mostrar los clientes que deben dinero en la pantalla
+function renderizarDeudores(ventasPendientes) {
+    const contenedor = document.getElementById('lista-deudores');
+    if (!contenedor) return; // Evita errores si aún no has puesto el div en el HTML
+    
+    contenedor.innerHTML = "";
+
+    if (ventasPendientes.length === 0) {
+        contenedor.innerHTML = "<p style='text-align:center; color:#7f8c8d; padding: 15px;'>No hay clientes con deudas pendientes. ¡Cuentas al día! 🎉</p>";
+        return;
+    }
+
+    ventasPendientes.forEach(venta => {
+        const div = document.createElement('div');
+        div.style = 'display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee;';
+        
+        div.innerHTML = `
+            <div>
+                <strong style="color: #2c3e50; font-size: 1.1em;">${venta.cliente}</strong> <br>
+                <small style="color: #7f8c8d;">${venta.producto} (Fila Excel: ${venta.fila})</small>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="color: #e74c3c; font-weight: bold; font-size: 1.2em;">$${venta.monto.toFixed(2)}</span>
+                <button onclick="marcarVentaComoPagada(${venta.fila})" style="background-color: #2ecc71; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    💵 Pagó
+                </button>
+            </div>
+        `;
+        contenedor.appendChild(div);
+    });
+}
+
+// Función que se activa al pulsar el botón "Pagó" desde el móvil
+async function marcarVentaComoPagada(numeroFila) {
+    if (!confirm("¿Confirmas que este cliente ya trajo el dinero y pagó su deuda?")) return;
+
+    try {
+        // Le avisamos a Google que cambie el estado de la celda de FALSE a TRUE
+        const respuesta = await fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors", 
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                targetTab: "Ventas",
+                accion: "actualizarPagoVenta",
+                fila: numeroFila
+            })
+        });
+
+        alert("¡Cobro registrado! Los dólares se sumarán a la caja enseguida...");
+        
+        // Esperamos un segundo a que Google guarde, y recargamos la app
+        setTimeout(() => {
+            cargarDatosDesdeGoogle();
+        }, 1500);
+
+    } catch (error) {
+        console.error("Error al registrar el pago:", error);
+        alert("Hubo un problema de conexión. Intenta de nuevo.");
+    }
+}
+
+// AL FINAL DEL TODO: Asegurar la ejecución al arrancar
 window.onload = cargarDatosDesdeGoogle;
